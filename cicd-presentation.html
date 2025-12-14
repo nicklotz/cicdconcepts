@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Working with Continuous Integration</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --ci-green: #22C55E;
+            --ci-dark: #14532D;
+            --ci-light: #BBF7D0;
+            --ci-white: #FFFFFF;
+            --ci-gray: #6B7280;
+            --ci-blue: #3B82F6;
+            --ci-orange: #F97316;
+        }
+
+        .reveal { background: linear-gradient(135deg, #0a1f0a 0%, #1a3d2a 100%); }
+        .reveal h1, .reveal h2, .reveal h3 { text-transform: none; color: var(--ci-green); }
+        .reveal h1 { color: var(--ci-white); }
+        .reveal section { text-align: left; }
+        .reveal section.center { text-align: center; }
+        .reveal pre { width: 100%; }
+        .reveal code { background: #1e3a2f; padding: 2px 8px; border-radius: 3px; }
+        .highlight { color: var(--ci-green); }
+        .highlight-gold { color: #FBBF24; }
+
+        .topic-intro { color: #60A5FA; }
+        .topic-setup { color: #34D399; }
+        .topic-testing { color: #F472B6; }
+        .topic-quality { color: #A78BFA; }
+        .topic-deploy { color: #FBBF24; }
+        .topic-improve { color: #F97316; }
+
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+        .small-text { font-size: 0.65em; }
+        .tiny-text { font-size: 0.55em; }
+
+        .reveal h1 { font-size: 2.2em; margin-bottom: 0.5em; }
+        .reveal h2 { font-size: 1.6em; margin-bottom: 0.5em; margin-top: 0; }
+        .reveal h3 { font-size: 1.2em; margin-top: 1.2rem; margin-bottom: 0.6rem; }
+        .reveal h4 { font-size: 1em; margin-top: 1rem; margin-bottom: 0.4rem; }
+        .reveal ul, .reveal ol { margin-top: 0.5rem; margin-bottom: 0.5rem; font-size: 0.85em; }
+        .reveal li { margin-bottom: 0.3rem; line-height: 1.3; }
+        .reveal p { margin: 0.5rem 0; font-size: 0.85em; line-height: 1.4; }
+
+        .reveal .slides section {
+            max-height: 100%;
+            overflow-y: auto;
+        }
+
+        .topic-card {
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 4px solid var(--ci-green);
+            padding: 0.6rem;
+            margin: 0.4rem 0;
+            font-size: 0.85em;
+        }
+        .topic-card ul, .topic-card ol { margin: 0.3rem 0; }
+        .topic-card li { margin-bottom: 0.2rem; }
+
+        .lab-slide {
+            background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+            border: 3px solid #3B82F6;
+        }
+        .lab-slide h2 { color: #3B82F6; }
+
+        .reveal table {
+            font-size: 0.7em;
+            margin: 0.5rem 0;
+        }
+        .reveal table td, .reveal table th {
+            padding: 0.3rem 0.5rem;
+        }
+
+        .day-header {
+            background: var(--ci-dark);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.7em;
+            overflow-x: auto;
+        }
+
+        .command { color: #60A5FA; }
+        .string { color: #34D399; }
+        .comment { color: #6B7280; }
+        .keyword { color: #F472B6; }
+
+        .pipeline-stage {
+            padding: 0.5rem;
+            margin: 0.2rem;
+            border-radius: 4px;
+            text-align: center;
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Title Slide -->
+            <section class="center">
+                <h1>Working with Continuous Integration</h1>
+                <h3>Building Better Software Through Automation</h3>
+                <p style="margin-top: 2rem; color: var(--ci-gray);">3-Day Training Course</p>
+            </section>
+
+            <!-- Course Overview -->
+            <section>
+                <h2>Course Overview</h2>
+                <p>Learn how to adopt a continuous integration mindset to achieve better code quality through automation.</p>
+
+                <h3>What You'll Learn</h3>
+                <div class="two-column small-text">
+                    <div>
+                        <ul>
+                            <li>CI/CD philosophy and principles</li>
+                            <li>Setting up Jenkins CI server</li>
+                            <li>Automated builds and pipelines</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <ul>
+                            <li>Automated testing strategies</li>
+                            <li>Code quality and analysis</li>
+                            <li>Continuous deployment practices</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="topic-card" style="margin-top: 1rem;">
+                    <p><strong>Course Philosophy:</strong> 70% hands-on labs, 30% instructor-led discussion</p>
+                </div>
+            </section>
+
+            <!-- Agenda -->
+            <section>
+                <h2>Course Agenda</h2>
+                <div class="three-column tiny-text">
+                    <div class="topic-card">
+                        <h4 class="topic-intro">Day 1</h4>
+                        <ul>
+                            <li>What is CI/CD?</li>
+                            <li>CI Philosophy & Benefits</li>
+                            <li>Jenkins Installation</li>
+                            <li>First Pipeline</li>
+                        </ul>
+                    </div>
+                    <div class="topic-card">
+                        <h4 class="topic-testing">Day 2</h4>
+                        <ul>
+                            <li>Automated Testing</li>
+                            <li>Test Types & Strategies</li>
+                            <li>Code Quality Analysis</li>
+                            <li>Static Analysis Tools</li>
+                        </ul>
+                    </div>
+                    <div class="topic-card">
+                        <h4 class="topic-deploy">Day 3</h4>
+                        <ul>
+                            <li>Continuous Deployment</li>
+                            <li>Release Strategies</li>
+                            <li>Metrics & Monitoring</li>
+                            <li>Best Practices</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Introduction to CI -->
+            <section class="center">
+                <div class="day-header">
+                    <h3 style="margin: 0; color: white;">Module 1</h3>
+                </div>
+                <h1 class="topic-intro">Introduction to Continuous Integration</h1>
+            </section>
+
+            <!-- What is CI -->
+            <section>
+                <h2 class="topic-intro">What is Continuous Integration?</h2>
+
+                <p>A software development practice where developers frequently integrate code into a shared repository, with each integration verified by automated builds and tests.</p>
+
+                <h3>Core Principles</h3>
+                <ul>
+                    <li class="fragment"><strong>Frequent Commits:</strong> Integrate code multiple times per day</li>
+                    <li class="fragment"><strong>Automated Builds:</strong> Every commit triggers a build</li>
+                    <li class="fragment"><strong>Automated Tests:</strong> Run tests on every build</li>
+                    <li class="fragment"><strong>Fast Feedback:</strong> Know within minutes if something broke</li>
+                </ul>
+
+                <div class="topic-card fragment">
+                    <p><strong>Goal:</strong> Detect and fix integration problems early, when they're easiest to resolve</p>
+                </div>
+            </section>
+
+            <!-- The Old Way -->
+            <section>
+                <h2 class="topic-intro">Before CI: Integration Hell</h2>
+
+                <div class="two-column small-text">
+                    <div>
+                        <h3>Traditional Approach</h3>
+                        <ul>
+                            <li class="fragment">Developers work in isolation for weeks</li>
+                            <li class="fragment">"Big bang" integration at the end</li>
+                            <li class="fragment">Merge conflicts everywhere</li>
+                            <li class="fragment">Bugs discovered late in cycle</li>
+                            <li class="fragment">Painful, stressful releases</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>The Problems</h3>
+                        <ul>
+                            <li class="fragment">"It works on my machine!"</li>
+                            <li class="fragment">No one knows if the build is broken</li>
+                            <li class="fragment">Manual testing is slow and error-prone</li>
+                            <li class="fragment">Fear of making changes</li>
+                            <li class="fragment">Long release cycles</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Why CI -->
+            <section>
+                <h2 class="topic-intro">Why CI? The Benefits</h2>
+
+                <div class="three-column small-text">
+                    <div class="topic-card">
+                        <h4>Quality</h4>
+                        <ul>
+                            <li>Bugs found early</li>
+                            <li>Consistent builds</li>
+                            <li>Automated testing</li>
+                            <li>Code review integration</li>
+                        </ul>
+                    </div>
+                    <div class="topic-card">
+                        <h4>Speed</h4>
+                        <ul>
+                            <li>Fast feedback loops</li>
+                            <li>Reduced integration time</li>
+                            <li>Automated deployments</li>
+                            <li>Faster time to market</li>
+                        </ul>
+                    </div>
+                    <div class="topic-card">
+                        <h4>Confidence</h4>
+                        <ul>
+                            <li>Always deployable code</li>
+                            <li>Reduced risk</li>
+                            <li>Better collaboration</li>
+                            <li>Documentation via code</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="topic-card fragment">
+                    <p><strong>Key Insight:</strong> CI transforms integration from a dreaded event into a non-event</p>
+                </div>
+            </section>
+
+            <!-- CI vs CD -->
+            <section>
+                <h2 class="topic-intro">CI vs CD vs CD</h2>
+
+                <div style="margin: 1rem 0;">
+                    <div class="pipeline-stage" style="background: #3B82F6;">
+                        <strong>Continuous Integration (CI)</strong>
+                        <p class="tiny-text">Automatically build and test code changes</p>
+                    </div>
+                    <div style="text-align: center; font-size: 1.5em;">↓</div>
+                    <div class="pipeline-stage" style="background: #8B5CF6;">
+                        <strong>Continuous Delivery (CD)</strong>
+                        <p class="tiny-text">Automatically prepare releases; manual deployment approval</p>
+                    </div>
+                    <div style="text-align: center; font-size: 1.5em;">↓</div>
+                    <div class="pipeline-stage" style="background: #22C55E;">
+                        <strong>Continuous Deployment (CD)</strong>
+                        <p class="tiny-text">Automatically deploy every change to production</p>
+                    </div>
+                </div>
+
+                <div class="topic-card fragment">
+                    <p><strong>Note:</strong> Start with CI, then evolve to Continuous Delivery, then optionally to Continuous Deployment</p>
+                </div>
+            </section>
+
+            <!-- CI Philosophy -->
+            <section>
+                <h2 class="topic-intro">The CI Philosophy</h2>
+
+                <h3>Developer Mindset</h3>
+                <ul>
+                    <li class="fragment"><strong>Commit early, commit often:</strong> Small, incremental changes</li>
+                    <li class="fragment"><strong>Never break the build:</strong> Run tests locally first</li>
+                    <li class="fragment"><strong>Fix broken builds immediately:</strong> Top priority</li>
+                    <li class="fragment"><strong>Write tests:</strong> No code without tests</li>
+                    <li class="fragment"><strong>Keep builds fast:</strong> Under 10 minutes ideally</li>
+                </ul>
+
+                <div class="topic-card fragment">
+                    <p><strong>Mantra:</strong> "If it hurts, do it more often" - frequent integration reduces pain</p>
+                </div>
+            </section>
+
+            <!-- Section: CI Environment -->
+            <section class="center">
+                <div class="day-header">
+                    <h3 style="margin: 0; color: white;">Module 2</h3>
+                </div>
+                <h1 class="topic-setup">Setting Up a CI Environment</h1>
+            </section>
+
+            <!-- CI Tools Landscape -->
+            <section>
+                <h2 class="topic-setup">CI Tools Landscape</h2>
+
+                <div class="two-column small-text">
+                    <div class="topic-card">
+                        <h4>Self-Hosted</h4>
+                        <ul>
+                            <li><strong>Jenkins</strong> - Most popular, extensible</li>
+                            <li><strong>GitLab CI</strong> - Integrated with GitLab</li>
+                            <li><strong>TeamCity</strong> - JetBrains product</li>
+                            <li><strong>Bamboo</strong> - Atlassian product</li>
+                            <li><strong>GoCD</strong> - ThoughtWorks</li>
+                        </ul>
+                    </div>
+                    <div class="topic-card">
+                        <h4>Cloud-Based</h4>
+                        <ul>
+                            <li><strong>GitHub Actions</strong> - GitHub native</li>
+                            <li><strong>CircleCI</strong> - Fast, Docker-native</li>
+                            <li><strong>Travis CI</strong> - Open source friendly</li>
+                            <li><strong>Azure DevOps</strong> - Microsoft ecosystem</li>
+                            <li><strong>AWS CodePipeline</strong> - AWS native</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="topic-card fragment">
+                    <p><strong>This Course:</strong> We'll use Jenkins - the industry standard for self-hosted CI</p>
+                </div>
+            </section>
+
+            <!-- Jenkins Overview -->
+            <section>
+                <h2 class="topic-setup">Jenkins Overview</h2>
+
+                <p>Jenkins is an open-source automation server that enables building, testing, and deploying software.</p>
+
+                <h3>Key Features</h3>
+                <ul>
+                    <li class="fragment"><strong>Extensible:</strong> 1800+ plugins for every need</li>
+                    <li class="fragment"><strong>Distributed:</strong> Scale with multiple agents</li>
+                    <li class="fragment"><strong>Pipeline as Code:</strong> Define builds in Jenkinsfile</li>
+                    <li class="fragment"><strong>Free & Open Source:</strong> Large community support</li>
+                </ul>
+
+                <div class="topic-card fragment">
+                    <p><strong>History:</strong> Originally Hudson (2004), forked to Jenkins in 2011. Used by Netflix, Facebook, and thousands of companies.</p>
+                </div>
+            </section>
+
+            <!-- Jenkins Architecture -->
+            <section>
+                <h2 class="topic-setup">Jenkins Architecture</h2>
+
+                <div class="two-column">
+                    <div>
+                        <h3>Components</h3>
+                        <ul class="small-text">
+                            <li class="fragment"><strong>Controller:</strong> Main server, manages jobs</li>
+                            <li class="fragment"><strong>Agents:</strong> Execute build tasks</li>
+                            <li class="fragment"><strong>Executors:</strong> Parallel build slots</li>
+                            <li class="fragment"><strong>Workspace:</strong> Job working directory</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Job Types</h3>
+                        <ul class="small-text">
+                            <li class="fragment"><strong>Freestyle:</strong> GUI-configured jobs</li>
+                            <li class="fragment"><strong>Pipeline:</strong> Code-defined workflows</li>
+                            <li class="fragment"><strong>Multibranch:</strong> Auto-discover branches</li>
+                            <li class="fragment"><strong>Folder:</strong> Organize jobs</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pipeline Basics -->
+            <section>
+                <h2 class="topic-setup">Jenkins Pipeline Basics</h2>
+
+                <p>Pipelines define your build process as code in a <code>Jenkinsfile</code>.</p>
+
+                <div class="code-block small-text">
+                    <pre><span class="keyword">pipeline</span> {
+    <span class="keyword">agent</span> any
+
+    <span class="keyword">stages</span> {
+        <span class="keyword">stage</span>(<span class="string">'Build'</span>) {
+            <span class="keyword">steps</span> {
+                <span class="command">echo</span> <span class="string">'Building the application...'</span>
+                <span class="command">sh</span> <span class="string">'make build'</span>
+            }
+        }
+        <span class="keyword">stage</span>(<span class="string">'Test'</span>) {
+            <span class="keyword">steps</span> {
+                <span class="command">echo</span> <span class="string">'Running tests...'</span>
+                <span class="command">sh</span> <span class="string">'make test'</span>
+            }
+        }
+        <span class="keyword">stage</span>(<span class="string">'Deploy'</span>) {
+            <span class="keyword">steps</span> {
+                <span class="command">echo</span> <span class="string">'Deploying...'</span>
+            }
+        }
+    }
+}</pre>
+                </div>
+            </section>
+
+            <!-- Pipeline Syntax -->
+            <section>
+                <h2 class="topic-setup">Pipeline Syntax</h2>
+
+                <div class="two-column small-text">
+                    <div>
+                        <h3>Declarative Pipeline</h3>
+                        <ul>
+                            <li>Structured, opinionated syntax</li>
+                            <li>Easier to read and write</li>
+                            <li>Built-in validation</li>
+                            <li>Recommended for most cases</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Scripted Pipeline</h3>
+                        <ul>
+                            <li>Full Groovy programming</li>
+                            <li>More flexible</li>
+                            <li>Steeper learning curve</li>
+                            <li>For complex workflows</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="topic-card fragment">
+                    <p><strong>Best Practice:</strong> Start with Declarative syntax; use Scripted only when you hit limitations</p>
+                </div>
+            </section>
+
+            <!-- Lab: Jenkins Setup -->
+            <section class="lab-slide">
+                <h2>Lab: Setting Up Jenkins</h2>
+
+                <h3>Exercise Objectives</h3>
+                <ul>
+                    <li>Install Jenkins on Ubuntu 24.04</li>
+                    <li>Complete initial setup wizard</li>
+                    <li>Create your first Freestyle job</li>
+                    <li>Create your first Pipeline job</li>
+                </ul>
+
+                <h3>What You'll Learn</h3>
+                <ul>
+                    <li>Jenkins installation and configuration</li>
+                    <li>Job creation and management</li>
+                    <li>Jenkinsfile basics</li>
+                </ul>
+            </section>
+
+            <!-- Section: Automated Testing -->
+            <section class="center">
+                <div class="day-header">
+                    <h3 style="margin: 0; color: white;">Module 3</h3>
+                </div>
+                <h1 class="topic-testing">Continuous Testing</h1>
+            </section>
+
+            <!-- Testing Pyramid -->
+            <section>
+                <h2 class="topic-testing">The Testing Pyramid</h2>
+
+                <div style="margin: 1rem auto; width: 80%;">
+                    <div class="pipeline-stage" style="background: #F472B6; width: 40%; margin: 0 auto;">E2E Tests</div>
+                    <div class="pipeline-stage" style="background: #A78BFA; width: 60%; margin: 0.5rem auto;">Integration Tests</div>
+                    <div class="pipeline-stage" style="background: #3B82F6; width: 80%; margin: 0.5rem auto;">Unit Tests</div>
+                </div>
+
+                <div class="two-column small-text fragment">
+                    <div>
+                        <h4>Unit Tests (Base)</h4>
+                        <ul>
+                            <li>Fast, isolated, many</li>
+                            <li>Test single functions/classes</li>
+                            <li>Run in milliseconds</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Integration/E2E (Top)</h4>
+                        <ul>
+                            <li>Slower, fewer</li>
+                            <li>Test system interactions</li>
+                            <li>More realistic but fragile</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Test Types -->
+            <section>
+                <h2 class="topic-testing">Types of Automated Tests</h2>
+
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>Purpose</th>
+                        <th>Speed</th>
+                        <th>Tools</th>
+                    </tr>
+                    <tr>
+                        <td>Unit</td>
+                        <td>Test individual components</td>
+                        <td>Fast</td>
+                        <td>pytest, JUnit, Jest</td>
+                    </tr>
+                    <tr>
+                        <td>Integration</td>
+                        <td>Test component interactions</td>
+                        <td>Medium</td>
+                        <td>pytest, TestNG</td>
+                    </tr>
+                    <tr>
+                        <td>System</td>
+                        <td>Test complete system</td>
+                        <td>Slow</td>
+                        <td>Selenium, Cypress</td>
+                    </tr>
+                    <tr>
+                        <td>Functional</td>
+                        <td>Test business requirements</td>
+                        <td>Varies</td>
+                        <td>Cucumber, Robot</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>Test speed/load</td>
+                        <td>Slow</td>
+                        <td>JMeter, Locust</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- Test-Driven CI -->
+            <section>
+                <h2 class="topic-testing">Testing in CI Pipelines</h2>
+
+                <div style="display: flex; justify-content: space-between; margin: 1.5rem 0;">
+                    <div class="pipeline-stage" style="background: #3B82F6;">
+                        <h4>1. Checkout</h4>
+                        <p class="tiny-text">Get code</p>
+                    </div>
+                    <div class="pipeline-stage" style="background: #8B5CF6;">
+                        <h4>2. Build</h4>
+                        <p class="tiny-text">Compile</p>
+                    </div>
+                    <div class="pipeline-stage" style="background: #22C55E;">
+                        <h4>3. Unit Test</h4>
+                        <p class="tiny-text">Fast tests</p>
+                    </div>
+                    <div class="pipeline-stage" style="background: #F97316;">
+                        <h4>4. Integration</h4>
+                        <p class="tiny-text">API tests</p>
+                    </div>
+                    <div class="pipeline-stage" style="background: #EF4444;">
+                        <h4>5. Report</h4>
+                        <p class="tiny-text">Results</p>
+                    </div>
+                </div>
+
+                <h3 class="fragment">Best Practices</h3>
+                <ul class="fragment small-text">
+                    <li>Run fast tests first (fail fast)</li>
+                    <li>Parallelize when possible</li>
+                    <li>Generate coverage reports</li>
+                    <li>Set minimum coverage thresholds</li>
+                </ul>
+            </section>
+
+            <!-- Writing Tests for CI -->
+            <section>
+                <h2 class="topic-testing">Writing Tests for Defects</h2>
+
+                <p>When a bug is found, write a test that reproduces it before fixing.</p>
+
+                <div class="code-block small-text">
+                    <pre><span class="comment"># Test that reproduces bug #123</span>
+<span class="keyword">def</span> <span class="command">test_bug_123_divide_by_zero</span>():
+    <span class="string">"""
+    Bug: Calculator crashes when dividing by zero
+    Expected: Should return error message
+    """</span>
+    calc = Calculator()
+    result = calc.divide(10, 0)
+    <span class="keyword">assert</span> result == <span class="string">"Error: Division by zero"</span></pre>
+                </div>
+
+                <div class="topic-card fragment">
+                    <p><strong>Benefit:</strong> The test ensures this bug never returns. Your test suite becomes a regression safety net.</p>
+                </div>
+            </section>
+
+            <!-- Lab: Automated Testing -->
+            <section class="lab-slide">
+                <h2>Lab: Automated Testing with Jenkins</h2>
+
+                <h3>Exercise Objectives</h3>
+                <ul>
+                    <li>Create a Python project with unit tests</li>
+                    <li>Configure Jenkins to run pytest</li>
+                    <li>Generate and publish test reports</li>
+                    <li>Set up test coverage reporting</li>
+                </ul>
+
+                <h3>What You'll Learn</h3>
+                <ul>
+                    <li>Integrating test frameworks with CI</li>
+                    <li>JUnit XML report format</li>
+                    <li>Coverage thresholds and gates</li>
+                </ul>
+            </section>
+
+            <!-- Section: Code Quality -->
+            <section class="center">
+                <div class="day-header">
+                    <h3 style="margin: 0; color: white;">Module 4</h3>
+                </div>
+                <h1 class="topic-quality">Continuous Quality</h1>
+            </section>
+
+            <!-- Code Inspection vs Testing -->
+            <section>
+                <h2 class="topic-quality">Code Inspection vs Code Testing</h2>
+
+                <div class="two-column">
+                    <div class="topic-card">
+                        <h4>Code Testing</h4>
+                        <ul class="small-text">
+                            <li>Verifies behavior</li>
+                            <li>Runs the code</li>
+                            <li>Catches runtime errors</li>
+                            <li>Tests what code does</li>
+                        </ul>
+                    </div>
+                    <div class="topic-card">
+                        <h4>Code Inspection</h4>
+                        <ul class="small-text">
+                            <li>Analyzes code structure</li>
+                            <li>Static analysis (no execution)</li>
+                            <li>Catches style/pattern issues</li>
+                            <li>Tests how code looks</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="topic-card fragment">
+                    <p><strong>Together:</strong> Testing ensures correctness; inspection ensures maintainability. You need both!</p>
+                </div>
+            </section>
+
+            <!-- Static Analysis Tools -->
+            <section>
+                <h2 class="topic-quality">Static Analysis Tools</h2>
+
+                <table>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Language</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td>pylint / flake8</td>
+                        <td>Python</td>
+                        <td>Style, errors, complexity</td>
+                    </tr>
+                    <tr>
+                        <td>ESLint</td>
+                        <td>JavaScript</td>
+                        <td>Style, errors, best practices</td>
+                    </tr>
+                    <tr>
+                        <td>ShellCheck</td>
+                        <td>Bash</td>
+                        <td>Shell script analysis</td>
+                    </tr>
+                    <tr>
+                        <td>SonarQube</td>
+                        <td>Multi-language</td>
+                        <td>Comprehensive quality platform</td>
+                    </tr>
+                    <tr>
+                        <td>Hadolint</td>
+                        <td>Dockerfile</td>
+                        <td>Dockerfile best practices</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- Code Metrics -->
+            <section>
+                <h2 class="topic-quality">Code Quality Metrics</h2>
+
+                <div class="two-column small-text">
+                    <div>
+                        <h3>Common Metrics</h3>
+                        <ul>
+                            <li class="fragment"><strong>Cyclomatic Complexity:</strong> Number of code paths</li>
+                            <li class="fragment"><strong>Code Coverage:</strong> % of code tested</li>
+                            <li class="fragment"><strong>Duplication:</strong> Copy-pasted code</li>
+                            <li class="fragment"><strong>Technical Debt:</strong> Estimated fix time</li>
+                        </ul>
+                    </div>
+                    <div class="fragment">
+                        <h3>Quality Gates</h3>
+                        <ul>
+                            <li>Coverage > 80%</li>
+                            <li>No critical issues</li>
+                            <li>Duplication < 3%</li>
+                            <li>Complexity < 10 per function</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="topic-card fragment">
+                    <p><strong>Tip:</strong> Set quality gates that fail the build if standards aren't met</p>
+                </div>
+            </section>
+
+            <!-- Lab: Code Quality -->
+            <section class="lab-slide">
+                <h2>Lab: Code Quality Analysis</h2>
+
+                <h3>Exercise Objectives</h3>
+                <ul>
+                    <li>Run pylint and flake8 in Jenkins</li>
+                    <li>Analyze shell scripts with ShellCheck</li>
+                    <li>Set up quality gates</li>
+                    <li>Generate quality reports</li>
+                </ul>
+
+                <h3>What You'll Learn</h3>
+                <ul>
+                    <li>Integrating linters into CI</li>
+                    <li>Enforcing code standards</li>
+                    <li>Reading quality reports</li>
+                </ul>
+            </section>
+
+            <!-- Section: Continuous Deployment -->
+            <section class="center">
+                <div class="day-header">
+                    <h3 style="margin: 0; color: white;">Module 5</h3>
+                </div>
+                <h1 class="topic-deploy">Continuous Deployment</h1>
+            </section>
+
+            <!-- Deployment Philosophy -->
+            <section>
+                <h2 class="topic-deploy">Deployment Philosophy</h2>
+
+                <p>If CI is about integrating code, CD is about getting that code to users safely and reliably.</p>
+
+                <h3>Key Principles</h3>
+                <ul>
+                    <li class="fragment"><strong>Automation:</strong> No manual steps in deployment</li>
+                    <li class="fragment"><strong>Repeatability:</strong> Same process every time</li>
+                    <li class="fragment"><strong>Reversibility:</strong> Easy rollback if needed</li>
+                    <li class="fragment"><strong>Visibility:</strong> Everyone knows deployment status</li>
+                </ul>
+
+                <div class="topic-card fragment">
+                    <p><strong>Goal:</strong> Deploying should be boring - a non-event that happens many times per day</p>
+                </div>
+            </section>
+
+            <!-- Release Strategies -->
+            <section>
+                <h2 class="topic-deploy">Release Strategies</h2>
+
+                <div class="two-column small-text">
+                    <div class="topic-card">
+                        <h4>Blue-Green Deployment</h4>
+                        <ul>
+                            <li>Two identical environments</li>
+                            <li>Switch traffic instantly</li>
+                            <li>Easy rollback</li>
+                            <li>Requires 2x resources</li>
+                        </ul>
+                    </div>
+                    <div class="topic-card">
+                        <h4>Canary Deployment</h4>
+                        <ul>
+                            <li>Gradual rollout (1%, 10%, 100%)</li>
+                            <li>Monitor for issues</li>
+                            <li>Rollback if problems</li>
+                            <li>Lower risk</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="two-column small-text fragment">
+                    <div class="topic-card">
+                        <h4>Rolling Deployment</h4>
+                        <ul>
+                            <li>Update instances one by one</li>
+                            <li>No downtime</li>
+                            <li>Mixed versions temporarily</li>
+                        </ul>
+                    </div>
+                    <div class="topic-card">
+                        <h4>Feature Flags</h4>
+                        <ul>
+                            <li>Deploy code, toggle features</li>
+                            <li>Separate deploy from release</li>
+                            <li>A/B testing capable</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Database Integration -->
+            <section>
+                <h2 class="topic-deploy">Database Integration in CI/CD</h2>
+
+                <p>Database changes are often the hardest part of deployment.</p>
+
+                <h3>Strategies</h3>
+                <ul class="small-text">
+                    <li class="fragment"><strong>Migration Scripts:</strong> Version-controlled schema changes (Flyway, Alembic)</li>
+                    <li class="fragment"><strong>Backward Compatible:</strong> New code works with old schema</li>
+                    <li class="fragment"><strong>Expand-Contract:</strong> Add new → migrate data → remove old</li>
+                    <li class="fragment"><strong>Blue-Green DB:</strong> Separate databases for each environment</li>
+                </ul>
+
+                <div class="topic-card fragment">
+                    <p><strong>Rule:</strong> Never make breaking schema changes. Always add, then remove in a later release.</p>
+                </div>
+            </section>
+
+            <!-- Lab: Deployment -->
+            <section class="lab-slide">
+                <h2>Lab: Continuous Deployment</h2>
+
+                <h3>Exercise Objectives</h3>
+                <ul>
+                    <li>Create a deployment pipeline in Jenkins</li>
+                    <li>Deploy to a staging environment</li>
+                    <li>Implement manual approval gates</li>
+                    <li>Practice rollback procedures</li>
+                </ul>
+
+                <h3>What You'll Learn</h3>
+                <ul>
+                    <li>Multi-stage pipelines</li>
+                    <li>Environment management</li>
+                    <li>Deployment automation</li>
+                </ul>
+            </section>
+
+            <!-- Section: Continuous Improvement -->
+            <section class="center">
+                <div class="day-header">
+                    <h3 style="margin: 0; color: white;">Module 6</h3>
+                </div>
+                <h1 class="topic-improve">Continuous Improvement</h1>
+            </section>
+
+            <!-- Feedback Loop -->
+            <section>
+                <h2 class="topic-improve">The Feedback Loop</h2>
+
+                <div style="display: flex; justify-content: space-around; margin: 1.5rem 0;">
+                    <div class="pipeline-stage" style="background: #3B82F6;">Code</div>
+                    <div style="align-self: center;">→</div>
+                    <div class="pipeline-stage" style="background: #8B5CF6;">Build</div>
+                    <div style="align-self: center;">→</div>
+                    <div class="pipeline-stage" style="background: #22C55E;">Test</div>
+                    <div style="align-self: center;">→</div>
+                    <div class="pipeline-stage" style="background: #F97316;">Deploy</div>
+                    <div style="align-self: center;">→</div>
+                    <div class="pipeline-stage" style="background: #EF4444;">Monitor</div>
+                </div>
+
+                <div style="text-align: center; font-size: 1.5em;">↺ Feedback</div>
+
+                <h3 class="fragment">Fast Feedback is Critical</h3>
+                <ul class="fragment small-text">
+                    <li>Build notifications (Slack, email)</li>
+                    <li>Test result dashboards</li>
+                    <li>Deployment status visibility</li>
+                    <li>Production monitoring alerts</li>
+                </ul>
+            </section>
+
+            <!-- Metrics -->
+            <section>
+                <h2 class="topic-improve">CI/CD Metrics to Track</h2>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>What It Measures</th>
+                        <th>Target</th>
+                    </tr>
+                    <tr>
+                        <td>Build Duration</td>
+                        <td>Time from commit to result</td>
+                        <td>< 10 minutes</td>
+                    </tr>
+                    <tr>
+                        <td>Build Success Rate</td>
+                        <td>% of builds that pass</td>
+                        <td>> 95%</td>
+                    </tr>
+                    <tr>
+                        <td>Deployment Frequency</td>
+                        <td>How often you deploy</td>
+                        <td>Daily or more</td>
+                    </tr>
+                    <tr>
+                        <td>Lead Time</td>
+                        <td>Commit to production</td>
+                        <td>< 1 day</td>
+                    </tr>
+                    <tr>
+                        <td>MTTR</td>
+                        <td>Mean time to recover</td>
+                        <td>< 1 hour</td>
+                    </tr>
+                    <tr>
+                        <td>Change Failure Rate</td>
+                        <td>% deployments causing issues</td>
+                        <td>< 15%</td>
+                    </tr>
+                </table>
+
+                <div class="topic-card fragment">
+                    <p><strong>DORA Metrics:</strong> These four metrics (deployment frequency, lead time, MTTR, change failure rate) are industry standards</p>
+                </div>
+            </section>
+
+            <!-- Best Practices -->
+            <section>
+                <h2 class="topic-improve">CI/CD Best Practices</h2>
+
+                <div class="three-column tiny-text">
+                    <div class="topic-card">
+                        <h4>Build</h4>
+                        <ul>
+                            <li>Single source of truth</li>
+                            <li>Reproducible builds</li>
+                            <li>Version everything</li>
+                            <li>Keep builds fast</li>
+                        </ul>
+                    </div>
+                    <div class="topic-card">
+                        <h4>Test</h4>
+                        <ul>
+                            <li>Test early, test often</li>
+                            <li>Maintain test quality</li>
+                            <li>Don't skip failing tests</li>
+                            <li>Parallelize tests</li>
+                        </ul>
+                    </div>
+                    <div class="topic-card">
+                        <h4>Deploy</h4>
+                        <ul>
+                            <li>Automate everything</li>
+                            <li>Deploy to production-like envs</li>
+                            <li>Feature flags over branches</li>
+                            <li>Always be able to rollback</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Organizational Buy-in -->
+            <section>
+                <h2 class="topic-improve">Rolling Out CI in Your Organization</h2>
+
+                <h3>Getting Buy-in</h3>
+                <ul class="small-text">
+                    <li class="fragment"><strong>Start Small:</strong> Pilot with one team or project</li>
+                    <li class="fragment"><strong>Show Value:</strong> Track and share metrics improvements</li>
+                    <li class="fragment"><strong>Train Teams:</strong> Invest in education</li>
+                    <li class="fragment"><strong>Iterate:</strong> Continuously improve the process</li>
+                </ul>
+
+                <div class="topic-card fragment">
+                    <p><strong>Culture Shift:</strong> CI/CD is as much about culture as tools. Blameless postmortems, shared ownership, and continuous learning are essential.</p>
+                </div>
+            </section>
+
+            <!-- Lab: Best Practices -->
+            <section class="lab-slide">
+                <h2>Lab: CI Best Practices and Metrics</h2>
+
+                <h3>Exercise Objectives</h3>
+                <ul>
+                    <li>Set up build notifications</li>
+                    <li>Create a CI/CD dashboard</li>
+                    <li>Implement build metrics collection</li>
+                    <li>Review and optimize pipeline performance</li>
+                </ul>
+
+                <h3>What You'll Learn</h3>
+                <ul>
+                    <li>Monitoring CI/CD health</li>
+                    <li>Identifying bottlenecks</li>
+                    <li>Continuous improvement practices</li>
+                </ul>
+            </section>
+
+            <!-- Course Summary -->
+            <section>
+                <h2>Course Summary</h2>
+
+                <div class="three-column small-text">
+                    <div class="topic-card">
+                        <h4 class="topic-intro">Foundation</h4>
+                        <ul>
+                            <li>CI/CD principles</li>
+                            <li>Jenkins setup</li>
+                            <li>Pipeline basics</li>
+                        </ul>
+                    </div>
+                    <div class="topic-card">
+                        <h4 class="topic-testing">Quality</h4>
+                        <ul>
+                            <li>Automated testing</li>
+                            <li>Code analysis</li>
+                            <li>Quality gates</li>
+                        </ul>
+                    </div>
+                    <div class="topic-card">
+                        <h4 class="topic-deploy">Delivery</h4>
+                        <ul>
+                            <li>Deployment strategies</li>
+                            <li>Metrics tracking</li>
+                            <li>Continuous improvement</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="fragment">Key Takeaways</h3>
+                <ul class="fragment small-text">
+                    <li>CI transforms integration from painful to routine</li>
+                    <li>Automated testing is the foundation of confidence</li>
+                    <li>Quality gates enforce standards automatically</li>
+                    <li>Metrics drive continuous improvement</li>
+                </ul>
+            </section>
+
+            <!-- Thank You -->
+            <section class="center">
+                <h1>Questions?</h1>
+                <p style="margin-top: 2rem; color: var(--ci-gray);">Working with Continuous Integration</p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            plugins: [ RevealNotes, RevealHighlight ]
+        });
+    </script>
+</body>
+</html>
