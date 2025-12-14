@@ -45,10 +45,14 @@ Purpose: Live application
 EOF
 ```
 
-3. Give Jenkins access to deployment directories.
+3. Give Jenkins and your user access to deployment directories.
 ```
 sudo chown -R jenkins:jenkins /opt/myapp
+sudo chmod -R 775 /opt/myapp
+sudo usermod -aG jenkins $USER
 ```
+
+> **Note:** You may need to log out and back in for the group membership to take effect.
 
 ## C. Creating a Deployable Application
 
