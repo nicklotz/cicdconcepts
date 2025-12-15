@@ -306,7 +306,7 @@ pipeline {
 
         stage('Clone Sample Repo') {
             steps {
-                git branch: 'main', url: 'https://github.com/octocat/Hello-World.git'
+                git branch: 'master', url: 'https://github.com/octocat/Hello-World.git'
                 sh 'ls -la'
             }
         }
