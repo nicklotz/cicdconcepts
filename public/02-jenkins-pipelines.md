@@ -173,6 +173,19 @@ echo "Directory permissions:"
 ls -la ~/git-repos/myciproject.git
 ```
 
+4. Allow Jenkins to check out local directories (normally considered insecure).
+```
+sudo mkdir -p /etc/systemd/system/jenkins.service.d
+
+sudo tee /etc/systemd/system/jenkins.service.d/override.conf >/dev/null <<'EOF'
+[Service]
+Environment="JAVA_OPTS=-Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true"
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl restart jenkins
+```   
+
 ## D. Creating a Pipeline Job from SCM
 
 1. In Jenkins, click **New Item**.
