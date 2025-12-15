@@ -155,6 +155,24 @@ git remote add origin ~/git-repos/myciproject.git
 git push -u origin master || git push -u origin main
 ```
 
+3. Give Jenkins permission to access the "remote" project.
+```
+chmod 755 ~
+chmod -R 755 ~/git-repos/myciproject.git
+
+# Configure git safe directory for Jenkins user (required for Git 2.35.2+)
+# This allows Jenkins to access repositories owned by other users
+sudo -u jenkins git config --global --add safe.directory '*'
+
+echo "============================================"
+echo "Repository path for Jenkins:"
+echo "file:///home/YOUR_USER/git-repos/myciproject.git"
+echo "============================================"
+echo ""
+echo "Directory permissions:"
+ls -la ~/git-repos/myciproject.git
+```
+
 ## D. Creating a Pipeline Job from SCM
 
 1. In Jenkins, click **New Item**.
