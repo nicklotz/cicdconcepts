@@ -311,7 +311,7 @@ pipeline {
                     steps {
                         echo 'Running Pylint...'
                         sh '''
-                            pylint calculator.py \
+                            python3 -m pylint calculator.py \
                                 --output-format=parseable \
                                 --rcfile=.pylintrc \
                                 --exit-zero \
@@ -337,7 +337,7 @@ pipeline {
                     steps {
                         echo 'Running Flake8...'
                         sh '''
-                            flake8 calculator.py \
+                            python3 -m flake8 calculator.py \
                                 --output-file=flake8-report.txt \
                                 --tee \
                                 --exit-zero || true
