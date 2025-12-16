@@ -349,7 +349,7 @@ pipeline {
                     steps {
                         echo 'Running Bandit security scan...'
                         sh '''
-                            bandit calculator.py \
+                            python3 -m bandit calculator.py \
                                 -f txt \
                                 -o bandit-report.txt \
                                 --exit-zero || true
