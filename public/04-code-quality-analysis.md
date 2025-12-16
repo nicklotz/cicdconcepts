@@ -127,8 +127,8 @@ exclude =
     dist,
     htmlcov
 ignore =
-    E501,  # line too long (handled by max-line-length)
-    W503,  # line break before binary operator
+    E501, 
+    W503, 
 per-file-ignores =
     tests/*: E501
 EOF
