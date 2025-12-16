@@ -34,7 +34,7 @@ Developer Commits → CI Server Detects → Build Triggered → Tests Run → Re
 
 1. Update your system packages.
 ```
-sudo apt-get update && sudo apt-get upgrade -y
+sudo apt-get update
 ```
 
 2. Install essential tools we'll need throughout the labs.
