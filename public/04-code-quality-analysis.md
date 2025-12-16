@@ -558,6 +558,7 @@ EOF
 
 3. Install the git hooks.
 ```
+sudo apt-get install pre-commit
 cd ~/myciproject
 pre-commit install
 ```
