@@ -193,7 +193,7 @@ echo "Copying files..."
 cp -v app.py calculator.py version.txt manifest.json "${APP_DIR}/"
 
 # Create deployment record
-cat << DEPLOY_EOF > "${APP_DIR}/deployment.txt
+cat << DEPLOY_EOF > "${APP_DIR}"/deployment.txt
 Deployed: ${TIMESTAMP}
 Environment: ${ENVIRONMENT}
 Version: $(cat version.txt)
