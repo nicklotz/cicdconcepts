@@ -330,21 +330,177 @@ cat /opt/myapp/metrics/notifications.log 2>/dev/null || echo "No notifications y
 
 ### Adding Notifications to Pipeline
 
-Add to your Jenkinsfile `post` section:
+Update your Jenkinsfile to include these changes:
+```
+cat << 'EOF'> ~/myciproject/Jenksfile
+pipeline {
+    agent any
 
-```groovy
-post {
-    success {
-        sh './notify.sh "SUCCESS" "Build passed!" "${JOB_NAME}" "${BUILD_NUMBER}"'
+    environment {
+        PYTHONPATH = "${WORKSPACE}"
     }
-    failure {
-        sh './notify.sh "FAILURE" "Build failed!" "${JOB_NAME}" "${BUILD_NUMBER}"'
+
+    parameters {
+        choice(name: 'DEPLOY_TO', choices: ['none', 'staging', 'production'], description: 'Deploy to environment')
+        booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Run tests')
     }
-    unstable {
-        sh './notify.sh "UNSTABLE" "Build unstable - check tests" "${JOB_NAME}" "${BUILD_NUMBER}"'
+
+    stages {
+        stage('Initialize') {
+            steps {
+                // Persist start time to a file (don't rely on env var survival)
+                sh '''
+                    date +%s > .build_start_time
+                '''
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'python3 -m py_compile calculator.py app.py'
+            }
+        }
+
+        stage('Test') {
+            when { expression { params.RUN_TESTS == true } }
+            steps {
+                sh '''
+                    set -e
+                    python3 -m pip install --user pytest pytest-cov --break-system-packages 2>/dev/null || true
+
+                    python3 -m pytest tests/ -v \
+                        --junitxml=test-results.xml \
+                        --cov=. \
+                        --cov-report=xml \
+                        --cov-report=term
+                '''
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: 'test-results.xml'
+
+                    // Write computed values to metrics.env (no heredocs; use python -c one-liners)
+                    sh '''
+                        # Defaults
+                        echo "TESTS_TOTAL=0"  >  metrics.env
+                        echo "TESTS_PASSED=0" >> metrics.env
+                        echo "TESTS_FAILED=0" >> metrics.env
+                        echo "COVERAGE=0"     >> metrics.env
+
+                        if [ -f test-results.xml ]; then
+                          python3 -c 'import xml.etree.ElementTree as ET
+root=ET.parse("test-results.xml").getroot()
+t=len(root.findall(".//testcase"))
+f=len(root.findall(".//failure"))+len(root.findall(".//error"))
+s=len(root.findall(".//skipped"))
+p=max(0,t-f-s)
+print(f"TESTS_TOTAL={t}\\nTESTS_PASSED={p}\\nTESTS_FAILED={f}")' > metrics.env || true
+                        fi
+
+                        if [ -f coverage.xml ]; then
+                          python3 -c 'import xml.etree.ElementTree as ET
+root=ET.parse("coverage.xml").getroot()
+lr=root.attrib.get("line-rate","")
+c=str(int(float(lr)*100)) if lr else "0"
+print(f"COVERAGE={c}")' >> metrics.env || true
+                        fi
+
+                        echo "Computed metrics.env:"
+                        cat metrics.env || true
+                    '''
+                }
+            }
+        }
+
+        stage('Quality') {
+            steps {
+                sh '''
+                    set +e
+                    python3 -m pip install --user pylint flake8 --break-system-packages 2>/dev/null || true
+                    python3 -m pylint calculator.py --exit-zero > pylint.txt || true
+                    python3 -m flake8 calculator.py --exit-zero > flake8.txt || true
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            when { expression { params.DEPLOY_TO != 'none' } }
+            steps {
+                sh "./deploy.sh ${params.DEPLOY_TO}"
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Build completed. Run ./report-metrics.sh to see metrics."
+        }
+
+        success {
+            sh '''
+                TS=$(date -Iseconds)
+
+                START=$(cat .build_start_time 2>/dev/null || echo 0)
+                END=$(date +%s)
+                DURATION=$((END - START))
+
+                # Load computed test/coverage numbers if present
+                if [ -f metrics.env ]; then
+                  . ./metrics.env
+                fi
+
+                ./collect-metrics.sh "$TS" "$JOB_NAME" "$BUILD_NUMBER" "$DURATION" "success" \
+                  "${TESTS_TOTAL:-0}" "${TESTS_PASSED:-0}" "${TESTS_FAILED:-0}" "${COVERAGE:-0}"
+            '''
+            sh './notify.sh "SUCCESS" "Build passed!" "${JOB_NAME}" "${BUILD_NUMBER}"'
+        }
+
+        failure {
+            sh '''
+                TS=$(date -Iseconds)
+
+                START=$(cat .build_start_time 2>/dev/null || echo 0)
+                END=$(date +%s)
+                DURATION=$((END - START))
+
+                if [ -f metrics.env ]; then
+                  . ./metrics.env
+                fi
+
+                ./collect-metrics.sh "$TS" "$JOB_NAME" "$BUILD_NUMBER" "$DURATION" "failure" \
+                  "${TESTS_TOTAL:-0}" "${TESTS_PASSED:-0}" "${TESTS_FAILED:-0}" "${COVERAGE:-0}"
+            '''
+            sh './notify.sh "FAILURE" "Build failed!" "${JOB_NAME}" "${BUILD_NUMBER}"'
+        }
+
+        unstable {
+            sh '''
+                TS=$(date -Iseconds)
+
+                START=$(cat .build_start_time 2>/dev/null || echo 0)
+                END=$(date +%s)
+                DURATION=$((END - START))
+
+                if [ -f metrics.env ]; then
+                  . ./metrics.env
+                fi
+
+                ./collect-metrics.sh "$TS" "$JOB_NAME" "$BUILD_NUMBER" "$DURATION" "unstable" \
+                  "${TESTS_TOTAL:-0}" "${TESTS_PASSED:-0}" "${TESTS_FAILED:-0}" "${COVERAGE:-0}"
+            '''
+            sh './notify.sh "UNSTABLE" "Build unstable - check tests" "${JOB_NAME}" "${BUILD_NUMBER}"'
+        }
     }
 }
+EOF
 ```
+```
+git add .
+git commit --no-verify -m "Update Jenkinsfile"
+git push
+```
+Then run a new parameterized build for **calculator-pipeline**.
 
 ## F. Creating a Simple Dashboard
 
